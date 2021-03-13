@@ -32,3 +32,10 @@ footer {
 #first #last {
     text-align: center;
 }
+
+/* ALL SIGNATURES */
+
+.listOfSignatures {
+    list-style-type: none;
+    text-align: left;
+}

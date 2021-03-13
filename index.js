@@ -2,12 +2,15 @@ const express = require("express");
 const handlebars = require("express-handlebars");
 const path = require("path");
 
+const { getSignatures, createSignature } = require("./signatures");
+
 const app = express();
 app.engine("handlebars", handlebars());
 app.set("view engine", "handlebars");
 
 app.use(express.static(path.join(__dirname, "public")));
 
+//Was war das hier?
 app.use(
     express.urlencoded({
         extended: false,
@@ -15,17 +18,28 @@ app.use(
 );
 
 app.get("/", (request, response) => {
-    response.render("register");
+    response.render("register"); //redirect("register") klappt hier nicht!
 });
 
 app.post("/register", (request, response) => {
-    const { firstName, lastName } = request.body;
+    const { firstname, lastname, signature } = request.body;
+    console.log(request.body);
 
-    let error;
-    if (!firstName || !lastName) {
-        error = "You forgot some details";
+    if (!firstname || !lastname) {
+        console.log(firstname, lastname);
+        const error = "You forgot some details!";
+        response.render("register", { error });
+        return;
+    } else {
+        createSignature({
+            firstname: `${firstname}`,
+            lastname: `${lastname}`,
+            signature: "someSIGNATURRREEE",
+        }).then(() => {
+            console.log("saved!");
+        });
+        response.redirect("signed");
     }
-    response.render("signed");
 });
 
 app.get("/signed", (request, response) => {
@@ -33,7 +47,11 @@ app.get("/signed", (request, response) => {
 });
 
 app.get("/allSigners", (request, response) => {
-    response.render("allSigners");
+    getSignatures().then((signatures) => {
+        response.render("allSigners", {
+            signatures,
+        });
+    });
 });
 
 app.listen(8080);

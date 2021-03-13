@@ -1,8 +1,10 @@
 
 <div>
 <p>Look who is all a signer:</p>
-<ul>
-    <li>someone</li>
+<ul class="listOfSignatures">
+    {{#signatures}}
+    <li>{{ firstname }} {{ lastname }}</li>
+    {{/signatures}}
 </ul>
 
 </div>
