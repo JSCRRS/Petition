@@ -49,7 +49,7 @@ app.post("/register", (request, response) => {
         createSignature({
             firstname: `${firstname}`,
             lastname: `${lastname}`,
-            signature: "testSignature",
+            signature: `${signature}`,
         }).then((id) => {
             //gib der Person, die sich erfolgreich registriert hat einen cookie:
             request.session.signature_id = id;

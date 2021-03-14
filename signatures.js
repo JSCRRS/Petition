@@ -9,7 +9,6 @@ const db = spicedPg(
 );
 
 function createSignature({ firstname, lastname, signature }) {
-    //console.log(firstname, lastname, signature);
     return db.query(
         /* "INSERT INTO signatures (firstname, lastname, signature) VALUES ($1, $2, $3)",
         [firstname, lastname, signature] */

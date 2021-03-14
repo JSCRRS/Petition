@@ -1,6 +1,5 @@
 const canvas = document.getElementById("canvas");
-const img = document.querySelector("img");
-const input = document.querySelector(".canvasDataInput");
+const input = document.getElementById("signature");
 
 const ctx = canvas.getContext("2d");
 let coord = { x: 0, y: 0 };
@@ -43,6 +42,4 @@ function draw(event) {
 function updateInput() {
     const url = canvas.toDataURL();
     input.value = url;
-    console.log(input.value);
-    img.src = url;
 }
