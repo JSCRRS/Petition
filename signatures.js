@@ -21,6 +21,13 @@ function getSignatures() {
     return db.query("SELECT * FROM signatures").then((result) => result.rows);
 }
 
+function getNumberOfSignatures() {
+    return db
+        .query("SELECT COUNT (id) FROM signatures")
+        .then((result) => result.rows[0].count)
+        .catch((error) => console.log(error));
+}
+
 function getIndividualSignature(id) {
     return db
         .query(`SELECT signature FROM signatures WHERE id = ${id}`)
@@ -28,4 +35,9 @@ function getIndividualSignature(id) {
         .catch((error) => console.log(error));
 }
 
-module.exports = { createSignature, getSignatures, getIndividualSignature };
+module.exports = {
+    createSignature,
+    getSignatures,
+    getNumberOfSignatures,
+    getIndividualSignature,
+};
