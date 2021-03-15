@@ -11,16 +11,21 @@
 {{/if}}
 
 
-<form action="/register" method="POST">
+<form action="/registration" method="POST">
 
-  <div>
-    <canvas id="canvas" ></canvas>
-    <input id="signature" type="hidden" required name="signature" />
+  <div class="userRegistration" >
+    <input type="text" name="firstname" required id="firstname" placeholder="First Name" />
+
+    <input type="text" name="lastname" required id="lastname" placeholder="Last Name" />
+
+    <input type="text" name="email" required id="email" placeholder="Email Adress" />
+
+    <input type="text" name="password" required id="password" placeholder="Password" />
   </div>
 
   <div>
     <input type="hidden" name="_csrf" value="{{csrfToken}}">
-    <button class="submitButton" type="submit">Send</button>
+    <button class="submitButton" type="submit">Sign Up</button>
   </div>
 
 </form>

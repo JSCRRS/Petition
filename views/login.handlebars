@@ -1,0 +1,27 @@
+
+<h1>The Petition</h1>
+<p>
+    PLEASE LOG IN!
+</p>
+
+{{#if error}}
+<p class="error">{{ error }}</p>
+{{/if}}
+
+
+<form action="/login" method="POST">
+
+  <div class="userLogin" >
+    <input type="text" name="email" required id="email" placeholder="Email Adress" />
+
+    <input type="text" name="password" required id="password" placeholder="Password" />
+  </div>
+
+  <div>
+    <input type="hidden" name="_csrf" value="{{csrfToken}}">
+    <button class="submitButton" type="submit">LogIn</button>
+  </div>
+
+</form>
+
+<script src="/script.js"></script> 
