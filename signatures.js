@@ -9,22 +9,21 @@ const db = spicedPg(
 );
 
 function registerUser({ firstname, lastname, email, password_hash }) {
-    return db.query(
-        "INSERT INTO users (firstname, lastname, email, password_hash) VALUES ($1, $2, $3, $4) RETURNING id",
-        [firstname, lastname, email, password_hash]
-    );
+    return db
+        .query(
+            "INSERT INTO users (firstname, lastname, email, password_hash) VALUES ($1, $2, $3, $4) RETURNING id",
+            [firstname, lastname, email, password_hash]
+        )
+        .then((result) => result.rows[0].id);
 }
 
 function createSignature({ user_id, signature }) {
-    console.log("inside createSignature", user_id);
     return db
         .query(
-            "INSERT INTO signatures (user_id, signature) VALUES ($1, $2) RETURNING id", //id muss zurück!
+            "INSERT INTO signatures (user_id, signature) VALUES ($1, $2) RETURNING id",
             [user_id, signature]
         )
-        .then(
-            (result) => result.rows[0].id // gib die ID weiter
-        );
+        .then((result) => result.rows[0].id);
 }
 
 function getSignatures() {
@@ -39,7 +38,8 @@ function getNumberOfSignatures() {
 }
 
 function getIndividualSignature(id) {
-    return (db.query("SELECT signature FROM signatures WHERE id = $1"), [id])
+    return db
+        .query("SELECT signature FROM signatures WHERE user_id = $1", [id]) //hier NICHT id !!
         .then((result) => result.rows[0].signature)
         .catch((error) => console.log(error));
 }

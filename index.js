@@ -85,29 +85,6 @@ app.post("/registration", (request, response) => {
     }
 });
 
-/*
-app.post("/register", (request, response) => {
-    const { firstname, lastname, signature } = request.body;
-
-    if (!firstname || !lastname) {
-        const error = "You forgot some details!";
-        response.render("register", { error });
-        return;
-    } else {
-        createSignature({
-            firstname: `${firstname}`,
-            lastname: `${lastname}`,
-            signature: `${signature}`,
-        }).then((id) => {
-            //gib der Person, die sich erfolgreich registriert hat einen cookie:
-            request.session.signature_id = id;
-            response.redirect("signed");
-            return;
-        });
-    }
-});
-*/
-
 app.post("/yourSign", (request, response) => {
     const { signature } = request.body;
     const user_id = request.session.user_id;
@@ -135,15 +112,11 @@ app.post("/yourSign", (request, response) => {
 
 app.get("/signed", (request, response) => {
     const user_id = request.session.user_id;
-    console.log(user_id);
-    console.log("SJSJSJSJS");
 
     //Wenn der Besucher einen cookie mit id hat, dann soll er seine signature sehen:
     if (user_id) {
-        const yourID = user_id.rows[0].id;
-        console.log(yourID);
         Promise.all([
-            getIndividualSignature(yourID),
+            getIndividualSignature(user_id),
             getNumberOfSignatures(),
         ]).then(([signature, numbers]) =>
             response.render("signed", {
