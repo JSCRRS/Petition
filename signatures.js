@@ -8,13 +8,23 @@ const db = spicedPg(
     `postgres:${username}:${password}@localhost:5432/${database}`
 );
 
-function createSignature({ firstname, lastname, signature }) {
+function registerUser({ firstname, lastname, email, password_hash }) {
     return db.query(
-        /* "INSERT INTO signatures (firstname, lastname, signature) VALUES ($1, $2, $3)",
-        [firstname, lastname, signature] */
-        "INSERT INTO signatures (firstname, lastname, signature) VALUES ($1, $2, $3) RETURNING id",
-        [firstname, lastname, signature]
+        "INSERT INTO users (firstname, lastname, email, password_hash) VALUES ($1, $2, $3, $4) RETURNING id",
+        [firstname, lastname, email, password_hash]
     );
+}
+
+function createSignature({ user_id, signature }) {
+    console.log("inside createSignature", user_id);
+    return db
+        .query(
+            "INSERT INTO signatures (user_id, signature) VALUES ($1, $2) RETURNING id", //id muss zurück!
+            [user_id, signature]
+        )
+        .then(
+            (result) => result.rows[0].id // gib die ID weiter
+        );
 }
 
 function getSignatures() {
@@ -29,13 +39,13 @@ function getNumberOfSignatures() {
 }
 
 function getIndividualSignature(id) {
-    return db
-        .query(`SELECT signature FROM signatures WHERE id = ${id}`)
+    return (db.query("SELECT signature FROM signatures WHERE id = $1"), [id])
         .then((result) => result.rows[0].signature)
         .catch((error) => console.log(error));
 }
 
 module.exports = {
+    registerUser,
     createSignature,
     getSignatures,
     getNumberOfSignatures,
