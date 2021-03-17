@@ -6,7 +6,7 @@ body {
     margin: 0;
     min-height: 100vh;
     background-color: #f7f8f5;
-    font-family: BrutGrotesqueBook, Helvetica, Arial, sans-serif;
+    font-family: BrutGrotesqueBook, Helvetica, Arial, sans-serif; /*Roboto?*/
     display: flex;
     flex-direction: column;
 }
@@ -25,6 +25,10 @@ footer {
     color: black;
     padding: 1%;
     text-align: right;
+}
+
+.petitionHeading {
+    letter-spacing: 9px;
 }
 
 /* REGISTER */

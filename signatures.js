@@ -27,7 +27,11 @@ function createSignature({ user_id, signature }) {
 }
 
 function getSignatures() {
-    return db.query("SELECT * FROM signatures").then((result) => result.rows);
+    return db
+        .query(
+            "SELECT users.firstname AS firstname, users.lastname AS lastname, signatures.id AS signature_id FROM users JOIN signatures ON users.id = signatures.user_id"
+        )
+        .then((result) => result.rows);
 }
 
 function getNumberOfSignatures() {
@@ -39,9 +43,16 @@ function getNumberOfSignatures() {
 
 function getIndividualSignature(id) {
     return db
-        .query("SELECT signature FROM signatures WHERE user_id = $1", [id]) //hier NICHT id !!
+        .query("SELECT signature FROM signatures WHERE user_id = $1", [id]) //hier NICHT id außerhalb von () !!
         .then((result) => result.rows[0].signature)
         .catch((error) => console.log(error));
+}
+
+function getUserByEmail(email) {
+    console.log(email);
+    return db
+        .query("SELECT * FROM users WHERE email = $1", [email])
+        .then((result) => result.rows[0]);
 }
 
 module.exports = {
@@ -50,4 +61,5 @@ module.exports = {
     getSignatures,
     getNumberOfSignatures,
     getIndividualSignature,
+    getUserByEmail,
 };

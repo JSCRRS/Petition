@@ -10,10 +10,10 @@ const {
     registerUser,
     createSignature,
     getIndividualSignature,
+    getUserByEmail,
 } = require("./signatures");
 
 const { compare, hash } = require("./password");
-const { request } = require("express");
 
 const app = express();
 app.engine("handlebars", handlebars());
@@ -49,12 +49,49 @@ app.use((request, response, next) => {
 
 app.get("/", (request, response) => {
     if (request.session.user_id) {
-        response.redirect("allSigners");
+        response.render("login");
         return;
     }
-    response.render("registration"); //redirect("register") klappt hier nicht! - response.redirect("/")
+    response.render("registration");
     return;
 });
+
+//LOGIN
+
+app.post("/login", (request, response) => {
+    const email = request.body.email;
+    const password = request.body.password;
+
+    if (!email || !password) {
+        response.render("login", { error: "need all your credentials" });
+        return;
+    } else {
+        getUserByEmail(email)
+            .then((user) => {
+                console.log(user);
+                if (!user) {
+                    return { user, match: false };
+                }
+                return { user, match: compare(user.password_hash, password) }; //im query wurde die ganze row des users abgeholt
+            })
+            .then(({ user, match }) => {
+                if (!match) {
+                    response.render("login", { error: "wrong credentials" });
+                    return;
+                }
+                request.session.user_id = user.id;
+                response.redirect("signed");
+            })
+            .catch((error) => {
+                console.log(error);
+                response.render("login", {
+                    error: "something went wrong",
+                });
+            });
+    }
+});
+
+//REGISTER
 
 app.post("/registration", (request, response) => {
     const { firstname, lastname, email, password } = request.body;
@@ -85,6 +122,8 @@ app.post("/registration", (request, response) => {
     }
 });
 
+// SIGN
+
 app.post("/yourSign", (request, response) => {
     const { signature } = request.body;
     const user_id = request.session.user_id;
@@ -110,6 +149,8 @@ app.post("/yourSign", (request, response) => {
     }
 });
 
+//DISPLAY INDIVIDuAL SIGNATURE
+
 app.get("/signed", (request, response) => {
     const user_id = request.session.user_id;
 
@@ -129,6 +170,8 @@ app.get("/signed", (request, response) => {
         return;
     }
 });
+
+//GET ALL SIGNERS
 
 app.get("/allSigners", (request, response) => {
     getSignatures().then((signatures) => {
