@@ -1,12 +1,12 @@
 const spicedPg = require("spiced-pg");
 
-const database = process.env.DB || "petition";
+const database = process.env.DB || "signatures";
 
 function getDatabaseURL() {
     if (process.env.DATABASE_URL) {
         return process.env.DATABASE_URL;
     }
-    const { username, password } = require("./credentials.json");
+    const { username, password } = require("./data.json");
     return `postgres:${username}:${password}@localhost:5432/${database}`;
 }
 

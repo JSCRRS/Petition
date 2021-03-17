@@ -58,19 +58,9 @@ app.get("/", (request, response) => {
 
 //LOGIN
 
-app.get("/login", (response, request) => {
+app.get("/login", (request, response) => {
     response.render("login");
 });
-/*
-app.get("/login", (response, request) => {      // FUNKTIONIER NICHT!
-    if (request.session.user_id) {
-        response.render("login");
-        return;
-    }
-    response.redirect("signed");
-    return;
-});
-*/
 
 app.post("/login", (request, response) => {
     const email = request.body.email;
@@ -82,14 +72,19 @@ app.post("/login", (request, response) => {
     } else {
         getUserByEmail(email)
             .then((user) => {
+                // log die ganzen daten des users aus dem user table:
                 console.log(user);
                 if (!user) {
                     return { user, match: false };
                 }
+                // log true oder false:
+                compare(password, user.password_hash).then((result) =>
+                    console.log(result)
+                );
                 return { user, match: compare(password, user.password_hash) }; //im query wurde die ganze row des users abgeholt
             })
             .then(({ user, match }) => {
-                if (!match) {
+                if (match === false) {
                     response.render("login", { error: "wrong credentials" });
                     return;
                 }
