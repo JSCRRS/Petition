@@ -61,9 +61,10 @@ input:focus {
 }
 
 #canvas {
+    background-color: #f7f8f5;
     width: 600px;
     height: 100px;
-    border: 1px dotted;
+    border-bottom: 1px dotted;
 }
 
 /* ALL SIGNATURES */

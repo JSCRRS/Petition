@@ -49,7 +49,7 @@ app.use((request, response, next) => {
 
 app.get("/", (request, response) => {
     if (request.session.user_id) {
-        response.render("login");
+        response.redirect("signed");
         return;
     }
     response.render("registration");
@@ -57,6 +57,21 @@ app.get("/", (request, response) => {
 });
 
 //LOGIN
+
+app.get("/login", (response, request) => {
+    response.redirect("/");
+    return;
+});
+/*
+app.get("/login", (response, request) => {      // FUNKTIONIER NICHT!
+    if (request.session.user_id) {
+        response.render("login");
+        return;
+    }
+    response.redirect("signed");
+    return;
+});
+*/
 
 app.post("/login", (request, response) => {
     const email = request.body.email;
@@ -72,7 +87,7 @@ app.post("/login", (request, response) => {
                 if (!user) {
                     return { user, match: false };
                 }
-                return { user, match: compare(user.password_hash, password) }; //im query wurde die ganze row des users abgeholt
+                return { user, match: compare(password, user.password_hash) }; //im query wurde die ganze row des users abgeholt
             })
             .then(({ user, match }) => {
                 if (!match) {
@@ -129,7 +144,7 @@ app.post("/yourSign", (request, response) => {
     const user_id = request.session.user_id;
 
     if (!signature) {
-        const error = "We need you signature!";
+        const error = "we need you signature!";
         response.render("yourSign", { error });
         return;
     } else {
@@ -143,7 +158,7 @@ app.post("/yourSign", (request, response) => {
             .catch((error) => {
                 console.log(error);
                 response.render("yourSign", {
-                    error: "Something went wrong!", //der error KLAPPT!!
+                    error: "something went wrong", //der error KLAPPT!!
                 });
             });
     }
@@ -182,4 +197,4 @@ app.get("/allSigners", (request, response) => {
     });
 });
 
-app.listen(8080);
+app.listen(process.env.PORT || 8080);
