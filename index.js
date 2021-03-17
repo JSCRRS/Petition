@@ -59,8 +59,7 @@ app.get("/", (request, response) => {
 //LOGIN
 
 app.get("/login", (response, request) => {
-    response.redirect("/");
-    return;
+    response.render("login");
 });
 /*
 app.get("/login", (response, request) => {      // FUNKTIONIER NICHT!
