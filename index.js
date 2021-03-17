@@ -77,19 +77,25 @@ app.post("/login", (request, response) => {
                 if (!user) {
                     return { user, match: false };
                 }
-                // log true oder false:
-                compare(password, user.password_hash).then((result) =>
-                    console.log(result)
-                );
-                return { user, match: compare(password, user.password_hash) }; //im query wurde die ganze row des users abgeholt
+                compare(password, user.password_hash).then((match) => {
+                    if (!match) {
+                        response.render("login", {
+                            error: "wrong credentials NUMMER 1",
+                        });
+                        return;
+                    }
+                    request.session.user_id = user.id;
+                    response.redirect("signed");
+                    return;
+                });
             })
-            .then(({ user, match }) => {
-                if (match === false) {
-                    response.render("login", { error: "wrong credentials" });
+            .then(({ match }) => {
+                if (!match) {
+                    response.render("login", {
+                        error: "wrong credentials NUMMER 2",
+                    });
                     return;
                 }
-                request.session.user_id = user.id;
-                response.redirect("signed");
             })
             .catch((error) => {
                 console.log(error);
