@@ -75,12 +75,15 @@ app.post("/login", (request, response) => {
                 // log die ganzen daten des users aus dem user table:
                 console.log(user);
                 if (!user) {
-                    return { user, match: false };
+                    response.render("login", {
+                        error: "no such user",
+                    });
+                    return;
                 }
                 compare(password, user.password_hash).then((match) => {
                     if (!match) {
                         response.render("login", {
-                            error: "wrong credentials NUMMER 1",
+                            error: "check credentials",
                         });
                         return;
                     }
@@ -88,14 +91,6 @@ app.post("/login", (request, response) => {
                     response.redirect("signed");
                     return;
                 });
-            })
-            .then(({ match }) => {
-                if (!match) {
-                    response.render("login", {
-                        error: "wrong credentials NUMMER 2",
-                    });
-                    return;
-                }
             })
             .catch((error) => {
                 console.log(error);
@@ -112,7 +107,7 @@ app.post("/registration", (request, response) => {
     const { firstname, lastname, email, password } = request.body;
 
     if (!firstname || !lastname || !email || !password) {
-        response.render("registration", { error: "Something happened" });
+        response.render("registration", { error: "provide all information" });
         return;
     } else {
         hash(request.body.password).then((password_hash) => {
@@ -144,7 +139,7 @@ app.post("/yourSign", (request, response) => {
     const user_id = request.session.user_id;
 
     if (!signature) {
-        const error = "we need you signature!";
+        const error = "provide your signature";
         response.render("yourSign", { error });
         return;
     } else {

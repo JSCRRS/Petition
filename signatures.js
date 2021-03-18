@@ -67,7 +67,6 @@ function getIndividualSignature(id) {
 }
 
 function getUserByEmail(email) {
-    console.log(email);
     return db
         .query("SELECT * FROM users WHERE email = $1", [email])
         .then((result) => result.rows[0]);
