@@ -11,6 +11,7 @@ const {
     createSignature,
     getIndividualSignature,
     getUserByEmail,
+    createUserProfile,
 } = require("./signatures");
 
 const { compare, hash } = require("./password");
@@ -119,7 +120,7 @@ app.post("/registration", (request, response) => {
             })
                 .then((id) => {
                     request.session.user_id = id;
-                    response.render("yourSign");
+                    response.redirect("profile"); //vorher:response.render("yourSign")
                     return;
                 })
                 .catch((error) => {
@@ -179,6 +180,31 @@ app.get("/signed", (request, response) => {
         response.redirect("/");
         return;
     }
+});
+
+// USER PROFILE
+
+app.get("/profile", (request, response) => {
+    if (request.session.user_id) {
+        response.render("profile");
+        return;
+    }
+    response.render("registration");
+    return;
+});
+
+//dann app.post und response.render("yourSign")
+app.post("/profile", (request, response) => {
+    const { age, city, url } = request.body;
+    const user_id = request.session.user_id;
+    createUserProfile({
+        age: `${age}`,
+        city: `${city}`,
+        url: `${url}`,
+        user_id: `${user_id}`,
+    })
+        .then(() => response.render("yourSign"))
+        .catch((error) => console.log(error));
 });
 
 //GET ALL SIGNERS

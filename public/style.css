@@ -31,7 +31,7 @@ footer {
     letter-spacing: 9px;
 }
 
-/* REGISTER */
+/* REGISTER */ /* userRegistration ist auch bei profile.handlebars*/
 
 .userRegistration {
     display: flex;
@@ -40,10 +40,15 @@ footer {
     align-items: center;
 }
 
+/*hier eine class für alle Eingabefelder machen*/
+
 #firstname,
 #lastname,
 #email,
-#password {
+#password,
+#age,
+#city,
+#url {
     padding: 3px;
     border: 0;
     border-bottom: 1px solid black;
@@ -57,7 +62,11 @@ input:focus {
 .submitButton {
     background-color: #f7f8f5;
     border: 0;
-    border-bottom: 1px solid black;
+    cursor: pointer;
+    /*border-bottom: 1px solid black;*/
+}
+.submitButton:focus {
+    outline: none;
 }
 
 #canvas {
@@ -65,6 +74,7 @@ input:focus {
     width: 600px;
     height: 100px;
     border-bottom: 1px dotted;
+    cursor: crosshair;
 }
 
 /* ALL SIGNATURES */

@@ -72,6 +72,15 @@ function getUserByEmail(email) {
         .then((result) => result.rows[0]);
 }
 
+function createUserProfile({ age, city, url, user_id }) {
+    return db
+        .query(
+            "INSERT INTO user_profiles (age, city, url, user_id) VALUES ($1, $2, $3, $4) RETURNING id",
+            [age, city, url, user_id]
+        )
+        .then((result) => result.rows[0].id);
+}
+
 module.exports = {
     registerUser,
     createSignature,
@@ -79,4 +88,5 @@ module.exports = {
     getNumberOfSignatures,
     getIndividualSignature,
     getUserByEmail,
+    createUserProfile,
 };

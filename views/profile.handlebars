@@ -1,0 +1,28 @@
+
+<h1 class="petitionHeading">MINIMAL</h1>
+<p>
+    CREATE YOUR PROFILE
+</p>
+
+{{#if error}}
+<p class="error">{{ error }}</p>
+{{/if}}
+
+
+<form action="/profile" method="POST">
+
+  <div class="userRegistration" >
+    <input type="text" name="age" id="age" placeholder="Age" />
+
+    <input type="text" name="city" id="city" placeholder="City" />
+
+    <input type="url" name="url" id="url" placeholder="Website" />
+
+  </div>
+
+  <div>
+    <input type="hidden" name="_csrf" value="{{csrfToken}}">
+    <button class="submitButton" type="submit">Submit</button>
+  </div>
+
+</form>
