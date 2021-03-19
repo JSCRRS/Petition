@@ -13,6 +13,7 @@ const {
     getUserByEmail,
     createUserProfile,
     getSignaturesByCity,
+    getUserById,
 } = require("./signatures");
 
 const { compare, hash } = require("./password");
@@ -236,6 +237,19 @@ app.get("/allSigners/:city", (request, response) => {
         })
 
         .catch((error) => console.log(error));
+});
+
+// UPDATE USER PROFILE
+
+app.get("/profile/edit", (request, response) => {
+    const user_id = request.session.user_id;
+
+    getUserById(user_id).then((details) => {
+        console.log(details);
+        response.render("editUserProfile", {
+            details,
+        });
+    });
 });
 
 app.listen(process.env.PORT || 8080);

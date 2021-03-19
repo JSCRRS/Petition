@@ -88,6 +88,18 @@ function createUserProfile({ age, city, url, user_id }) {
         .then((result) => result.rows[0].id);
 }
 
+function getUserById(id) {
+    return db
+        .query(
+            `SELECT firstname, lastname, email, password_hash, age, city, url
+            FROM users 
+            FULL JOIN user_profiles ON user_profiles.user_id = users.id
+            WHERE users.id = $1`,
+            [id]
+        )
+        .then((result) => result.rows[0]);
+}
+
 module.exports = {
     registerUser,
     createSignature,
@@ -97,4 +109,5 @@ module.exports = {
     getUserByEmail,
     createUserProfile,
     getSignaturesByCity,
+    getUserById,
 };
