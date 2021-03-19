@@ -1,10 +1,8 @@
-
 <div>
-<h2>we are minimal</h2>
-<ul class="listOfSignatures">
-    {{#signatures}}
-    <li>{{ firstname }} {{ lastname }}</li>
-    {{/signatures}}
-</ul>
-
+    <h2>we are minimal</h2>
+    <ul class="listOfSignatures">
+        {{#details}}
+           <li>{{> signersDetails }}</li>
+        {{/details}}
+    </ul>
 </div>

@@ -14,18 +14,6 @@ const db = spicedPg(getDatabaseURL());
 
 console.log(`[db] Connecting to: ${database}`);
 
-/*
-const spicedPg = require("spiced-pg");
-
-const { username, password } = require("./data.json");
-
-const database = "signatures";
-
-const db = spicedPg(
-    `postgres:${username}:${password}@localhost:5432/${database}`
-);
-*/
-
 function registerUser({ firstname, lastname, email, password_hash }) {
     return db
         .query(
@@ -44,13 +32,24 @@ function createSignature({ user_id, signature }) {
         .then((result) => result.rows[0].id);
 }
 
-function getSignatures() {
+function getAllSignedUsersDetails() {
     return db
         .query(
-            "SELECT users.firstname AS firstname, users.lastname AS lastname, signatures.id AS signature_id FROM users JOIN signatures ON users.id = signatures.user_id"
+            "SELECT firstname, lastname, age, city, url FROM users JOIN signatures ON users.id = signatures.user_id FULL JOIN user_profiles ON users.id = user_profiles.user_id WHERE signatures.signature IS NOT NULL"
         )
         .then((result) => result.rows);
 }
+
+function getSignaturesByCity(signerCity) {
+    return db
+        .query(
+            "SELECT firstname, lastname, age, url FROM users JOIN signatures ON users.id = signatures.user_id FULL JOIN user_profiles ON users.id = user_profiles.user_id WHERE city = $1",
+            [signerCity]
+        )
+        .then((result) => result.rows);
+}
+
+// (syntax for checking if signature IS NOT NULL ;)
 
 function getNumberOfSignatures() {
     return db
@@ -73,10 +72,18 @@ function getUserByEmail(email) {
 }
 
 function createUserProfile({ age, city, url, user_id }) {
+    if (age) {
+        return db
+            .query(
+                "INSERT INTO user_profiles (age, city, url, user_id) VALUES ($1, $2, $3, $4) RETURNING id",
+                [age, city, url, user_id]
+            )
+            .then((result) => result.rows[0].id);
+    }
     return db
         .query(
-            "INSERT INTO user_profiles (age, city, url, user_id) VALUES ($1, $2, $3, $4) RETURNING id",
-            [age, city, url, user_id]
+            "INSERT INTO user_profiles (city, url, user_id) VALUES ($1, $2, $3) RETURNING id",
+            [city, url, user_id]
         )
         .then((result) => result.rows[0].id);
 }
@@ -84,9 +91,10 @@ function createUserProfile({ age, city, url, user_id }) {
 module.exports = {
     registerUser,
     createSignature,
-    getSignatures,
+    getAllSignedUsersDetails,
     getNumberOfSignatures,
     getIndividualSignature,
     getUserByEmail,
     createUserProfile,
+    getSignaturesByCity,
 };

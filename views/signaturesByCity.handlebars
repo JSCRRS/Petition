@@ -1,0 +1,9 @@
+<div>
+    <h2>we are minimal in {{ city }}</h2>
+    <ul class="listOfSignatures">
+        {{#details}}
+           <li>{{> signersDetails hideCity=true }}</li>
+        {{/details}}
+    </ul>
+    <a href="/allSigners">back to all signers</a>
+</div>

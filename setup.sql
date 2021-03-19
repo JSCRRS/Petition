@@ -23,6 +23,6 @@ CREATE TABLE user_profiles (
     user_id         INTEGER NOT NULL UNIQUE REFERENCES users (id),
     age             INTEGER,
     city            VARCHAR(255),
-    url             VARCHAR(50)
+    url             VARCHAR(255)
 );
 

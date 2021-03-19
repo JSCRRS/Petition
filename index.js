@@ -5,13 +5,14 @@ const cookieSession = require("cookie-session");
 const csurf = require("csurf");
 
 const {
-    getSignatures,
+    getAllSignedUsersDetails,
     getNumberOfSignatures,
     registerUser,
     createSignature,
     getIndividualSignature,
     getUserByEmail,
     createUserProfile,
+    getSignaturesByCity,
 } = require("./signatures");
 
 const { compare, hash } = require("./password");
@@ -197,6 +198,10 @@ app.get("/profile", (request, response) => {
 app.post("/profile", (request, response) => {
     const { age, city, url } = request.body;
     const user_id = request.session.user_id;
+    if (!age && !city && !url) {
+        response.redirect("/");
+        return;
+    }
     createUserProfile({
         age: `${age}`,
         city: `${city}`,
@@ -210,12 +215,27 @@ app.post("/profile", (request, response) => {
 //GET ALL SIGNERS
 
 app.get("/allSigners", (request, response) => {
-    getSignatures().then((signatures) => {
+    getAllSignedUsersDetails().then((details) => {
         response.render("allSigners", {
-            signatures,
+            details,
         });
         return;
     });
+});
+
+// GET ALL SIGNERS RESP. CITY
+
+app.get("/allSigners/:city", (request, response) => {
+    const { city } = request.params;
+    getSignaturesByCity(city)
+        .then((details) => {
+            response.render("signaturesByCity", {
+                city,
+                details,
+            });
+        })
+
+        .catch((error) => console.log(error));
 });
 
 app.listen(process.env.PORT || 8080);

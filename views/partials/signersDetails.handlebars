@@ -1,0 +1,28 @@
+<article class="signersDetails">
+    {{#if url }}
+    <a href="{{ url }}" target="_blank" class="name"> <!-- Was ist clearURL helper?-->
+        {{ firstname }} {{ lastname }}
+    </a>
+
+        {{#if age}}
+        <span class="age">({{ age }})</span>
+        {{/if}}
+
+    {{else}}
+    <span class="name">
+        {{ firstname }} {{ lastname }}
+        {{#if age}}
+        <span class="age">({{ age }})</span>
+        {{/if}}
+    </span>
+    {{/if}}
+    
+    {{#if city }}
+        {{#unless hideCity}}
+        <a href="/allSigners/{{ city }}" class="city">{{ city }}</a> <!-- Was ist toLowerCase helper?-->
+        {{/unless}}
+    {{/if}}
+    
+
+</article>
+
