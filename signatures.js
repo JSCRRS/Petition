@@ -35,7 +35,13 @@ function createSignature({ user_id, signature }) {
 function getAllSignedUsersDetails() {
     return db
         .query(
-            "SELECT firstname, lastname, age, city, url FROM users JOIN signatures ON users.id = signatures.user_id FULL JOIN user_profiles ON users.id = user_profiles.user_id WHERE signatures.signature IS NOT NULL"
+            `
+            SELECT firstname, lastname, age, city, url 
+            FROM users 
+            JOIN signatures ON users.id = signatures.user_id 
+            FULL JOIN user_profiles ON users.id = user_profiles.user_id 
+            WHERE signatures.signature IS NOT NULL"
+            `
         )
         .then((result) => result.rows);
 }
@@ -100,6 +106,39 @@ function getUserById(id) {
         .then((result) => result.rows[0]);
 }
 
+function updateUsersTable({
+    firstname,
+    lastname,
+    email,
+    password_hash,
+    user_id,
+}) {
+    if (password_hash) {
+        return db
+            .query(
+                `UPDATE users
+            SET firstname = $1, lastname = $2, email = $3, password_hash = $4
+            WHERE id = $5`,
+                [firstname, lastname, email, password_hash, user_id]
+            )
+            .then((result) => {
+                console.log("inside job1:", result);
+                result.rows[0];
+            });
+    }
+    return db
+        .query(
+            `UPDATE users
+        SET firstname = $1, lastname = $2, email = $3
+        WHERE id = $4`,
+            [firstname, lastname, email, user_id]
+        )
+        .then((result) => {
+            console.log("inside job2", result);
+            result.rows[0];
+        });
+}
+
 module.exports = {
     registerUser,
     createSignature,
@@ -110,4 +149,5 @@ module.exports = {
     createUserProfile,
     getSignaturesByCity,
     getUserById,
+    updateUsersTable,
 };

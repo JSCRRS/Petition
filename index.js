@@ -14,6 +14,7 @@ const {
     createUserProfile,
     getSignaturesByCity,
     getUserById,
+    updateUsersTable,
 } = require("./signatures");
 
 const { compare, hash } = require("./password");
@@ -245,10 +246,24 @@ app.get("/profile/edit", (request, response) => {
     const user_id = request.session.user_id;
 
     getUserById(user_id).then((details) => {
-        console.log(details);
         response.render("editUserProfile", {
             details,
         });
+    });
+});
+
+app.post("/profile/edit", (request, response) => {
+    const user_id = request.session.user_id;
+    const { firstname, lastname, email, password_hash } = request.body;
+
+    updateUsersTable({
+        firstname: `${firstname}`,
+        lastname: `${lastname}`,
+        email: `${email}`,
+        password_hash: `${password_hash}`,
+        user_id: `${user_id}`,
+    }).then((results) => {
+        console.log(results);
     });
 });
 
