@@ -15,9 +15,12 @@ const {
     getSignaturesByCity,
     getUserById,
     updateUsersTable,
+    updateUserProfilesTable,
+    deleteSignature,
 } = require("./signatures");
 
 const { compare, hash } = require("./password");
+const { response } = require("express");
 
 const app = express();
 app.engine("handlebars", handlebars());
@@ -138,6 +141,10 @@ app.post("/registration", (request, response) => {
 
 // SIGN
 
+app.get("/yourSign", (request, response) => {
+    response.render("yourSign");
+});
+
 app.post("/yourSign", (request, response) => {
     const { signature } = request.body;
     const user_id = request.session.user_id;
@@ -163,26 +170,32 @@ app.post("/yourSign", (request, response) => {
     }
 });
 
-//DISPLAY INDIVIDuAL SIGNATURE
+//DISPLAY INDIVIDUAL SIGNATURE
 
 app.get("/signed", (request, response) => {
     const user_id = request.session.user_id;
 
     //Wenn der Besucher einen cookie mit id hat, dann soll er seine signature sehen:
     if (user_id) {
-        Promise.all([
-            getIndividualSignature(user_id),
-            getNumberOfSignatures(),
-        ]).then(([signature, numbers]) =>
-            response.render("signed", {
-                signature,
-                numbers,
-            })
-        );
-    } else {
-        response.redirect("/");
+        Promise.all([getIndividualSignature(user_id), getNumberOfSignatures()])
+            .then(([signature, numbers]) =>
+                response.render("signed", {
+                    signature,
+                    numbers,
+                })
+            )
+            .catch((error) => console.log(error));
         return;
     }
+    response.redirect("/");
+});
+
+// DELETE SIGNATURE
+
+app.post("/signed", (request, response) => {
+    const user_id = request.session.user_id;
+
+    deleteSignature(user_id).then(() => response.render("signed"));
 });
 
 // USER PROFILE
@@ -196,7 +209,6 @@ app.get("/profile", (request, response) => {
     return;
 });
 
-//dann app.post und response.render("yourSign")
 app.post("/profile", (request, response) => {
     const { age, city, url } = request.body;
     const user_id = request.session.user_id;
@@ -246,6 +258,7 @@ app.get("/profile/edit", (request, response) => {
     const user_id = request.session.user_id;
 
     getUserById(user_id).then((details) => {
+        //console.log("hier sind die details", details, "von user:", user_id);
         response.render("editUserProfile", {
             details,
         });
@@ -254,16 +267,29 @@ app.get("/profile/edit", (request, response) => {
 
 app.post("/profile/edit", (request, response) => {
     const user_id = request.session.user_id;
-    const { firstname, lastname, email, password_hash } = request.body;
+    const password = request.body.password_hash;
 
-    updateUsersTable({
-        firstname: `${firstname}`,
-        lastname: `${lastname}`,
-        email: `${email}`,
-        password_hash: `${password_hash}`,
-        user_id: `${user_id}`,
-    }).then((results) => {
-        console.log(results);
+    //console.log(request.body);
+
+    //console.log(password);
+
+    Promise.all([
+        updateUsersTable({
+            password,
+            user_id,
+            ...request.body,
+        }),
+        updateUserProfilesTable({
+            user_id,
+            ...request.body,
+        }),
+    ]).then(() => {
+        getUserById(user_id).then((details) => {
+            console.log("hier sind detail", details);
+            response.render("editUserProfile", {
+                details,
+            });
+        });
     });
 });
 

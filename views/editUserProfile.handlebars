@@ -7,28 +7,45 @@
   <div class="userRegistration" >
 
     {{#details}}
-    <input type="text" name="firstname" id="firstname" placeholder="{{firstname}}" />
 
-    <input type="text" name="lastname" id="lastname" placeholder="{{lastname}}" />
+        {{#if firstname}}
+            <input type="text" name="firstname" id="firstname" value="{{firstname}}"  />
+            {{else}}
+            <input type="text" name="firstname" id="firstname" placeholder="first name" />
+        {{/if}}
 
-    <input type="email" name="email" id="email" placeholder="{{email}}" />
+        {{#if lastname}}
+            <input type="text" name="lastname" id="lastname" value="{{lastname}}" />
+            {{else}}
+            <input type="text" name="lastname" id="lastname" placeholder="last name" />
+        {{/if}}
 
-    <input type="password" name="password" id="password" placeholder="password" />
+        {{#if email}}
+            <input type="email" name="email" id="email" value="{{email}}" />
+            {{else}}
+            <input type="email" name="email" id="email" placeholder="email" />
+        {{/if}}
+
+        {{#if password_hash}}
+            <input type="password" name="password_hash" id="password" value="{{password_hash}}" />
+            {{else}}
+            <input type="password" name="password_hash" id="password" placeholder="password" />
+        {{/if}}
 
         {{#if age}}
-            <input type="number" name="age" id="age" placeholder="{{age}}" />
+            <input type="number" name="age" id="age" value="{{age}}" />
             {{else}}
             <input type="number" name="age" id="age" placeholder="age" />
         {{/if}}
 
         {{#if city}}
-            <input type="text" name="city" id="city" placeholder="{{city}}" />
+            <input type="text" name="city" id="city" value="{{city}}" />
             {{else}}
             <input type="text" name="city" id="city" placeholder="city" />
         {{/if}}
 
         {{#if url}}
-            <input type="url" name="url" id="url" placeholder="{{url}}" />
+            <input type="url" name="url" id="url" value="{{url}}" />
             {{else}}
             <input type="url" name="url" id="url" placeholder="website" />
         {{/if}}
@@ -41,6 +58,10 @@
   <div>
     <input type="hidden" name="_csrf" value="{{csrfToken}}">
     <button class="submitButton" type="submit">update</button>
+  </div>
+
+  <div>
+      <a href="/signed">back to your signature</a>
   </div>
 
   

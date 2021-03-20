@@ -1,14 +1,24 @@
 
 
 
-<h1>Thank you for your support!</h1>
+
+{{#if signature}}
+        <h1>thank you for your support</h1>
+        <img src="{{ signature }}" alt="your Signature">
+        {{else}}
+        <h1>no signature yet</h1>
+        <a href="/yourSign">sign</a>
+    
+{{/if}}
 
 
-<!-- <p>your signature: {{ signature }}</p> -->
-<img src="{{ signature }}" alt="your Signature">
-
-<a href="/allSigners">see all {{ numbers }} supporter(s)!</a>
+<a href="/allSigners">see all {{ numbers }} supporter(s)</a>
 
 <a href="/profile/edit">edit your profile</a>
 
-<a href="#">delete your signature</a>
+<form action="/signed" method="POST">
+  <div>
+    <input type="hidden" name="_csrf" value="{{csrfToken}}">
+    <button class="submitButton" type="submit">delete your signature</button>
+  </div>
+</form>
