@@ -27,8 +27,11 @@
         {{/if}}
 
         {{#if password_hash}}
-            <input type="password" name="password_hash" id="password" value="{{password_hash}}" />
-            {{else}}
+{{!--             <input type="password" name="password" id="password" value="{{password_hash}}" />
+ --}}             <input type="password" name="password" id="password" placeholder="password" />
+
+ 
+        {{else}}
             <input type="password" name="password_hash" id="password" placeholder="password" />
         {{/if}}
 

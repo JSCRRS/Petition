@@ -37,13 +37,11 @@ function deleteSignature(id) {
 function getAllSignedUsersDetails() {
     return db
         .query(
-            `
-            SELECT firstname, lastname, age, city, url 
+            `SELECT firstname, lastname, age, city, url 
             FROM users 
             FULL JOIN signatures ON users.id = signatures.user_id 
             FULL JOIN user_profiles ON users.id = user_profiles.user_id 
-            WHERE signatures.signature IS NOT NULL"
-            `
+            WHERE signatures.signature IS NOT NULL`
         )
         .then((result) => result.rows);
 }
@@ -105,20 +103,22 @@ function getUserById(id) {
 }
 
 function updateUsersTable({
-    password,
+    newPassword_hash,
+    //password,
     firstname,
     lastname,
     email,
-    password_hash,
+    //password_hash,
     user_id,
 }) {
-    if (password) {
+    if (newPassword_hash) {
+        //vorher: password
         return db
             .query(
                 `UPDATE users
             SET firstname = $1, lastname = $2, email = $3, password_hash = $4
             WHERE id = $5`,
-                [firstname, lastname, email, password, user_id]
+                [firstname, lastname, email, newPassword_hash, user_id] //vorher: password
             )
             .then((result) => {
                 console.log("das Password wurde AUCH geändert", result);

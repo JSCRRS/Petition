@@ -20,7 +20,6 @@ const {
 } = require("./signatures");
 
 const { compare, hash } = require("./password");
-const { response } = require("express");
 
 const app = express();
 app.engine("handlebars", handlebars());
@@ -229,12 +228,13 @@ app.post("/profile", (request, response) => {
 //GET ALL SIGNERS
 
 app.get("/allSigners", (request, response) => {
-    getAllSignedUsersDetails().then((details) => {
-        response.render("allSigners", {
-            details,
-        });
-        return;
-    });
+    getAllSignedUsersDetails()
+        .then((details) => {
+            response.render("allSigners", {
+                details,
+            });
+        })
+        .catch((error) => console.log(error));
 });
 
 // GET ALL SIGNERS RESP. CITY
@@ -267,13 +267,41 @@ app.get("/profile/edit", (request, response) => {
 
 app.post("/profile/edit", (request, response) => {
     const user_id = request.session.user_id;
-    const password = request.body.password_hash;
+    const password = request.body.password;
 
-    //console.log(request.body);
+    /*     if (password) {
+        console.log("jetzt IST ein password hier!");
+    } else {
+        console.log("jetzt ist KEIN password hier!");
+    } */
 
-    //console.log(password);
-
+    if (password) {
+        hash(password).then((newPassword_hash) => {
+            updateUsersTable({
+                newPassword_hash,
+                user_id,
+                ...request.body,
+            });
+        });
+    }
     Promise.all([
+        updateUsersTable({
+            user_id,
+            ...request.body,
+        }),
+        updateUserProfilesTable({
+            user_id,
+            ...request.body,
+        }),
+    ]).then(() => {
+        getUserById(user_id).then((details) => {
+            console.log("hier sind detail", details);
+            response.render("editUserProfile", {
+                details,
+            });
+        });
+    });
+    /*     Promise.all([
         updateUsersTable({
             password,
             user_id,
@@ -290,7 +318,7 @@ app.post("/profile/edit", (request, response) => {
                 details,
             });
         });
-    });
+    }); */
 });
 
 app.listen(process.env.PORT || 8080);

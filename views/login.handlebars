@@ -1,8 +1,10 @@
 
 <h1 class="petitionHeading">MINIMAL</h1>
-<p>
-    PLEASE LOG IN!
-</p>
+
+  <h3>
+    please login
+  </h3>
+
 
 {{#if error}}
 <p class="error">{{ error }}</p>
@@ -12,14 +14,14 @@
 <form action="/login" method="POST">
 
   <div class="userLogin" >
-    <input type="text" name="email" required id="email" placeholder="Email Adress" />
+    <input type="text" name="email" required id="email" placeholder="email" />
 
-    <input type="password" name="password" required id="password" placeholder="Password" />
+    <input type="password" name="password" required id="password" placeholder="password" />
   </div>
 
   <div>
     <input type="hidden" name="_csrf" value="{{csrfToken}}">
-    <button class="submitButton" type="submit">LogIn</button>
+    <button class="submitButton" type="submit">login</button>
   </div>
 
 </form>
