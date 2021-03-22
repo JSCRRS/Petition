@@ -1,9 +1,16 @@
 
 <h1 class="petitionHeading">MINIMAL</h1>
-<p>
-    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. 
-    Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. 
-    Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
+<p class="mainText">
+    <b>Your world is full of stuff.</b>
+    <span class="lineBreak"></span>
+    Stuff you need and stuff you should actually throw away, stuff you should actually go through, 
+    stuff you might need again sometime somehow...
+    <span class="lineBreak"></span>
+    With your signature you promise to throw away a piece of stuff every friday at 5 o'clock.
+    <span class="lineBreak"></span>
+    Don't let your possessions rule you, but rule your possessions.  
+    <span class="lineBreak"></span>
+    <b>Keep it minimal.</b> 
 </p>
 
 {{#if error}}
@@ -14,18 +21,18 @@
 <form action="/registration" method="POST">
 
   <div class="userRegistration" >
-    <input type="text" name="firstname" required id="firstname" placeholder="First Name" />
+    <input type="text" name="firstname" required id="firstname" placeholder="first name" />
 
-    <input type="text" name="lastname" required id="lastname" placeholder="Last Name" />
+    <input type="text" name="lastname" required id="lastname" placeholder="last name" />
 
-    <input type="email" name="email" required id="email" placeholder="Email Adress" />
+    <input type="email" name="email" required id="email" placeholder="email" />
 
-    <input type="password" name="password" required id="password" placeholder="Password" />
+    <input type="password" name="password" required id="password" placeholder="password" />
   </div>
 
   <div>
     <input type="hidden" name="_csrf" value="{{csrfToken}}">
-    <button class="submitButton" type="submit">Sign Up</button>
+    <button class="submitButton" type="submit">sign up</button>
   </div>
 
 </form>

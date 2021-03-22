@@ -1,6 +1,6 @@
 <article class="signersDetails">
     {{#if url }}
-    <a href="{{ url }}" target="_blank" class="name"> <!-- Was ist clearURL helper?-->
+    <a class="linksSigners" href="{{ url }}" target="_blank" class="name"> <!-- Was ist clearURL helper?-->
         {{ firstname }} {{ lastname }}
     </a>
 
@@ -19,7 +19,7 @@
     
     {{#if city }}
         {{#unless hideCity}}
-        <a href="/allSigners/{{ city }}" class="city">{{ city }}</a> <!-- Was ist toLowerCase helper?-->
+        <a class="linksSigners" href="/allSigners/{{ city }}" class="city">{{ city }}</a> <!-- Was ist toLowerCase helper?-->
         {{/unless}}
     {{/if}}
     

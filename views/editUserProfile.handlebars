@@ -1,5 +1,15 @@
-<h1>update profile</h1>
+<h1 class="petitionHeading">MINIMAL</h1>
 
+
+{{#if update}}
+<h1>{{update}}</h1>
+{{else}}
+<h1>update profile</h1>
+{{/if}}
+
+{{#if error}}
+<p class="error">{{ error }}</p>
+{{/if}}
 
 
 <form action="/profile/edit" method="POST">
@@ -27,8 +37,7 @@
         {{/if}}
 
         {{#if password_hash}}
-{{!--             <input type="password" name="password" id="password" value="{{password_hash}}" />
- --}}             <input type="password" name="password" id="password" placeholder="password" />
+          <input type="password" name="password" id="password" placeholder="password" />
 
  
         {{else}}
@@ -64,7 +73,8 @@
   </div>
 
   <div>
-      <a href="/signed">back to your signature</a>
+      <span class="lineBreak"></span>
+      <a class="myLinks" href="/signed">back to your signature</a>
   </div>
 
   

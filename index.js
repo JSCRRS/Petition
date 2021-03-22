@@ -58,14 +58,13 @@ app.get("/", (request, response) => {
         response.redirect("signed");
         return;
     }
-    response.render("registration");
-    return;
+    response.redirect("registration");
 });
 
 //LOGIN
 
 app.get("/login", (request, response) => {
-    response.render("login");
+    response.render("login", { title: "login" });
 });
 
 app.post("/login", (request, response) => {
@@ -73,41 +72,51 @@ app.post("/login", (request, response) => {
     const password = request.body.password;
 
     if (!email || !password) {
-        response.render("login", { error: "need all your credentials" });
+        response.render("login", {
+            error: "need all your credentials",
+            title: "login",
+        });
         return;
-    } else {
-        getUserByEmail(email)
-            .then((user) => {
-                // log die ganzen daten des users aus dem user table:
-                console.log(user);
-                if (!user) {
+    }
+    getUserByEmail(email)
+        .then((user) => {
+            if (!user) {
+                response.render("login", {
+                    title: "login",
+                    error: "check email",
+                });
+                return;
+            }
+            compare(password, user.password_hash).then((match) => {
+                if (!match) {
                     response.render("login", {
-                        error: "no such user",
+                        title: "login",
+                        error: "check password",
                     });
                     return;
                 }
-                compare(password, user.password_hash).then((match) => {
-                    if (!match) {
-                        response.render("login", {
-                            error: "check credentials",
-                        });
-                        return;
-                    }
-                    request.session.user_id = user.id;
-                    response.redirect("signed");
-                    return;
-                });
-            })
-            .catch((error) => {
-                console.log(error);
-                response.render("login", {
-                    error: "something went wrong",
-                });
+                request.session.user_id = user.id;
+                response.redirect("signed");
             });
-    }
+        })
+        .catch((error) => {
+            console.log(error);
+            response.render("login", {
+                error: "something went wrong",
+                title: "login",
+            });
+        });
 });
 
 //REGISTER
+
+app.get("/registration", (request, response) => {
+    if (request.session.user_id) {
+        response.redirect("login");
+        return;
+    }
+    response.render("registration", { title: "registration" });
+});
 
 app.post("/registration", (request, response) => {
     const { firstname, lastname, email, password } = request.body;
@@ -115,33 +124,31 @@ app.post("/registration", (request, response) => {
     if (!firstname || !lastname || !email || !password) {
         response.render("registration", { error: "provide all information" });
         return;
-    } else {
-        hash(request.body.password).then((password_hash) => {
-            return registerUser({
-                firstname: `${firstname}`,
-                lastname: `${lastname}`,
-                email: `${email}`,
-                password_hash,
-            })
-                .then((id) => {
-                    request.session.user_id = id;
-                    response.redirect("profile"); //vorher:response.render("yourSign")
-                    return;
-                })
-                .catch((error) => {
-                    console.log(error);
-                    response.render("registration", {
-                        error: "Something went wrong!",
-                    });
-                });
-        });
     }
+    hash(request.body.password).then((password_hash) => {
+        return registerUser({
+            firstname: `${firstname}`,
+            lastname: `${lastname}`,
+            email: `${email}`,
+            password_hash,
+        })
+            .then((id) => {
+                request.session.user_id = id;
+                response.redirect("profile");
+            })
+            .catch((error) => {
+                console.log(error);
+                response.render("registration", {
+                    error: "check your credentials",
+                });
+            });
+    });
 });
 
 // SIGN
 
 app.get("/yourSign", (request, response) => {
-    response.render("yourSign");
+    response.render("yourSign", { title: "sign" });
 });
 
 app.post("/yourSign", (request, response) => {
@@ -149,24 +156,22 @@ app.post("/yourSign", (request, response) => {
     const user_id = request.session.user_id;
 
     if (!signature) {
-        const error = "provide your signature";
-        response.render("yourSign", { error });
+        response.render("yourSign", { error: "provide your signature" });
         return;
-    } else {
-        createSignature({
-            user_id,
-            signature,
-        })
-            .then(() => {
-                response.redirect("signed"); //oder render?? -- wenn man kein app.get("/signed") hat, wird es auch nicht redirect...
-            })
-            .catch((error) => {
-                console.log(error);
-                response.render("yourSign", {
-                    error: "something went wrong", //der error KLAPPT!!
-                });
-            });
     }
+    createSignature({
+        user_id,
+        signature,
+    })
+        .then(() => {
+            response.redirect("signed");
+        })
+        .catch((error) => {
+            console.log(error);
+            response.render("yourSign", {
+                error: "could not create signature",
+            });
+        });
 });
 
 //DISPLAY INDIVIDUAL SIGNATURE
@@ -174,45 +179,51 @@ app.post("/yourSign", (request, response) => {
 app.get("/signed", (request, response) => {
     const user_id = request.session.user_id;
 
-    //Wenn der Besucher einen cookie mit id hat, dann soll er seine signature sehen:
-    if (user_id) {
-        Promise.all([getIndividualSignature(user_id), getNumberOfSignatures()])
-            .then(([signature, numbers]) =>
-                response.render("signed", {
-                    signature,
-                    numbers,
-                })
-            )
-            .catch((error) => console.log(error));
+    if (!user_id) {
+        response.redirect("registration");
         return;
     }
-    response.redirect("/");
+    Promise.all([getIndividualSignature(user_id), getNumberOfSignatures()])
+        .then(([signature, numbers]) =>
+            response.render("signed", {
+                signature,
+                numbers,
+                title: "signature",
+            })
+        )
+        .catch((error) => {
+            console.log("error loading your singature", error);
+            response.render("signed", {
+                //render
+                title: "signature",
+            });
+        });
 });
 
 // DELETE SIGNATURE
 
 app.post("/signed", (request, response) => {
     const user_id = request.session.user_id;
-
-    deleteSignature(user_id).then(() => response.render("signed"));
+    deleteSignature(user_id)
+        .then(() => response.redirect("signed"))
+        .catch((error) => console.log(error));
 });
 
 // USER PROFILE
 
 app.get("/profile", (request, response) => {
     if (request.session.user_id) {
-        response.render("profile");
+        response.render("profile", { title: "profile" });
         return;
     }
     response.render("registration");
-    return;
 });
 
 app.post("/profile", (request, response) => {
     const { age, city, url } = request.body;
     const user_id = request.session.user_id;
     if (!age && !city && !url) {
-        response.redirect("/");
+        response.redirect("yourSign");
         return;
     }
     createUserProfile({
@@ -228,10 +239,17 @@ app.post("/profile", (request, response) => {
 //GET ALL SIGNERS
 
 app.get("/allSigners", (request, response) => {
+    const user_id = request.session.user_id;
+    if (!user_id) {
+        response.redirect("registration");
+        return;
+    }
+
     getAllSignedUsersDetails()
         .then((details) => {
             response.render("allSigners", {
                 details,
+                title: "all",
             });
         })
         .catch((error) => console.log(error));
@@ -240,12 +258,18 @@ app.get("/allSigners", (request, response) => {
 // GET ALL SIGNERS RESP. CITY
 
 app.get("/allSigners/:city", (request, response) => {
+    const user_id = request.session.user_id;
+    if (!user_id) {
+        response.redirect("registration");
+        return;
+    }
     const { city } = request.params;
     getSignaturesByCity(city)
         .then((details) => {
             response.render("signaturesByCity", {
                 city,
                 details,
+                title: `${city}`,
             });
         })
 
@@ -256,10 +280,13 @@ app.get("/allSigners/:city", (request, response) => {
 
 app.get("/profile/edit", (request, response) => {
     const user_id = request.session.user_id;
-
+    if (!user_id) {
+        response.redirect("registration");
+        return;
+    }
     getUserById(user_id).then((details) => {
-        //console.log("hier sind die details", details, "von user:", user_id);
         response.render("editUserProfile", {
+            title: "edit",
             details,
         });
     });
@@ -268,12 +295,6 @@ app.get("/profile/edit", (request, response) => {
 app.post("/profile/edit", (request, response) => {
     const user_id = request.session.user_id;
     const password = request.body.password;
-
-    /*     if (password) {
-        console.log("jetzt IST ein password hier!");
-    } else {
-        console.log("jetzt ist KEIN password hier!");
-    } */
 
     if (password) {
         hash(password).then((newPassword_hash) => {
@@ -293,14 +314,23 @@ app.post("/profile/edit", (request, response) => {
             user_id,
             ...request.body,
         }),
-    ]).then(() => {
-        getUserById(user_id).then((details) => {
-            console.log("hier sind detail", details);
+    ])
+        .then(() => {
+            getUserById(user_id).then((details) => {
+                response.render("editUserProfile", {
+                    title: "edit",
+                    details,
+                    update: "updated",
+                });
+            });
+        })
+        .catch((error) => {
+            console.log("error updating your profile", error);
             response.render("editUserProfile", {
-                details,
+                title: "edit",
+                error: "error updating your profile",
             });
         });
-    });
     /*     Promise.all([
         updateUsersTable({
             password,

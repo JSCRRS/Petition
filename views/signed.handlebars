@@ -1,19 +1,25 @@
 
 
+<h1 class="petitionHeading">MINIMAL</h1>
 
 
 {{#if signature}}
-        <h1>thank you for your support</h1>
+        <h1 class="h1_signed">you will throw it all away</h1>
         <img src="{{ signature }}" alt="your Signature">
         {{else}}
-        <h1>no signature here</h1>
-        <a href="/yourSign">sign</a>
+        <h1>no signature</h1>
+        <a class="myLinks" href="/yourSign">sign here</a>
 {{/if}}
 
 
-<a href="/allSigners">see all {{ numbers }} supporter(s)</a>
+{{#if error}}
+<p class="error">{{ error }}</p>
+{{/if}}
 
-<a href="/profile/edit">edit your profile</a>
+<div>
+<a class="myLinks" href="/allSigners">see the {{ numbers }} supporter(s)</a>
+<span class="lineBreak"></span>
+<a class="myLinks" href="/profile/edit">edit your profile</a>
 
 <form action="/signed" method="POST">
   <div>
@@ -21,5 +27,7 @@
     <button class="submitButton" type="submit">delete your signature</button>
   </div>
 </form>
+</div>
+
 
 

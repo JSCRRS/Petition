@@ -1,6 +1,7 @@
 const spicedPg = require("spiced-pg");
 
-const database = process.env.DB || "signatures";
+const database = process.env.DB || "petitionTest";
+//petition
 
 function getDatabaseURL() {
     if (process.env.DATABASE_URL) {
@@ -64,15 +65,13 @@ function getSignaturesByCity(signerCity) {
 function getNumberOfSignatures() {
     return db
         .query("SELECT COUNT (id) FROM signatures")
-        .then((result) => result.rows[0].count)
-        .catch((error) => console.log(error));
+        .then((result) => result.rows[0].count);
 }
 
 function getIndividualSignature(id) {
     return db
         .query("SELECT signature FROM signatures WHERE user_id = $1", [id]) //hier NICHT id außerhalb von () !!
-        .then((result) => result.rows[0].signature)
-        .catch((error) => console.log("please sign!:", error));
+        .then((result) => result.rows[0].signature);
 }
 
 function getUserByEmail(email) {
@@ -104,21 +103,18 @@ function getUserById(id) {
 
 function updateUsersTable({
     newPassword_hash,
-    //password,
     firstname,
     lastname,
     email,
-    //password_hash,
     user_id,
 }) {
     if (newPassword_hash) {
-        //vorher: password
         return db
             .query(
                 `UPDATE users
             SET firstname = $1, lastname = $2, email = $3, password_hash = $4
             WHERE id = $5`,
-                [firstname, lastname, email, newPassword_hash, user_id] //vorher: password
+                [firstname, lastname, email, newPassword_hash, user_id]
             )
             .then((result) => {
                 console.log("das Password wurde AUCH geändert", result);
